@@ -1,0 +1,14 @@
+metadata:
+  labels:
+    app: examples
+    description: Examples Controller
+    title: Quickstart service demo
+spec:
+  deploy:
+    apiFileName: examples-openapi-v3.yaml
+    type:
+      fwkSpringBoot:
+        groupId: com.mercadona.prueba.web-master-data
+        artifactId: examples-api
+        package: com.mercadona.prueba.api.web-master-data
+        interfacesWithTags: false
