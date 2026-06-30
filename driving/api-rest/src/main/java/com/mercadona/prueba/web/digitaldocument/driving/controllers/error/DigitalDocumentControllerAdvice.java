@@ -1,6 +1,8 @@
 package com.mercadona.prueba.web.digitaldocument.driving.controllers.error;
 
 import com.mercadona.framework.cna.commons.domain.MercadonaBusinessException;
+import com.mercadona.prueba.web.digitaldocument.application.exception.DocumentNotFoundException;
+import com.mercadona.prueba.web.digitaldocument.application.exception.DocumentNotRetryableException;
 import com.mercadona.prueba.web.digitaldocument.driving.controllers.dto.ErrorResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,19 @@ import java.util.stream.Collectors;
 @Slf4j
 @ControllerAdvice
 public class DigitalDocumentControllerAdvice {
+
+  @ExceptionHandler(DocumentNotFoundException.class)
+  public ResponseEntity<ErrorResponseDto> handleDocumentNotFound(DocumentNotFoundException e) {
+    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        .body(ErrorResponseDto.of("DOCUMENT_NOT_FOUND", e.getMessage()));
+  }
+
+  @ExceptionHandler(DocumentNotRetryableException.class)
+  public ResponseEntity<ErrorResponseDto> handleDocumentNotRetryable(DocumentNotRetryableException e) {
+    log.warn("event=RETRY_REJECTED message={}", e.getMessage());
+    return ResponseEntity.status(HttpStatus.CONFLICT)
+        .body(ErrorResponseDto.of("DOCUMENT_NOT_RETRYABLE", e.getMessage()));
+  }
 
   @ExceptionHandler(MissingServletRequestParameterException.class)
   public ResponseEntity<ErrorResponseDto> handleMissingParam(MissingServletRequestParameterException e) {

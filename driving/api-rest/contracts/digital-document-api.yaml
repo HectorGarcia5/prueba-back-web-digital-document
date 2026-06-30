@@ -106,6 +106,30 @@ paths:
         "400":
           description: Invalid status parameter
 
+  /api/v1/documents/{documentId}/retry:
+    post:
+      tags: [digital-document]
+      summary: Manually trigger retry for a FAILED document
+      operationId: retryDocument
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "202":
+          description: Retry accepted — document queued for reprocessing by the batch
+        "404":
+          description: Document not found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponseDto' }
+        "409":
+          description: Document cannot be retried (not in FAILED state)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponseDto' }
+
   /api/v1/utils/documents/republish:
     post:
       tags: [utils]
