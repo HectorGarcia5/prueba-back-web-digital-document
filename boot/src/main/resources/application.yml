@@ -19,6 +19,16 @@ management:
         include: [ info, health, metrics, prometheus ]
 
 fwkcna:
+  buckets:
+    - id: digital-documents
+      bucket-name: ${BUCKET_NAME}
+      enabled: true
+      url: ${BUCKET_ENDPOINT}
+      signed-operation-token-expiration: 120
+      provider: ${BUCKET_PROVIDER:netapp}
+      credentials:
+        access-key: ${BUCKET_ACCESS_KEY}
+        secret-key: ${BUCKET_SECRET_KEY}
   outbox:
     enabled: true
     table-name: ${TABLE_NAME:o_outbox}

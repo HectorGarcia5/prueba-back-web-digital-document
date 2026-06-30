@@ -1,11 +1,41 @@
+server:
+  port: 8083
+
 spring:
   flyway:
     enabled: false
-
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:digital_document}
-    username: ${DB_USER:sa}
-    password: ${DB_PASSWORD:root}
+    url: jdbc:postgresql://localhost:5432/digital_document
+    username: sa
+    password: root
     driver-class-name: org.postgresql.Driver
     hikari:
       schema: digital_document
+  kafka:
+    bootstrap-servers: localhost:29092
+    properties:
+      schema.registry.url: http://localhost:9081
+
+fwkcna:
+  buckets:
+    - id: digital-documents
+      bucket-name: digital-documents
+      enabled: true
+      url: http://localhost:9000
+      signed-operation-token-expiration: 120
+      provider: minio
+      credentials:
+        access-key: minioadmin
+        secret-key: minioadmin
+  outbox:
+    enabled: true
+    table-name: o_outbox
+    schema-registries:
+      sr-basic:
+        url: http://localhost:9081
+  security:
+    enabled: false
+
+outbox:
+  topic:
+    employee-digital-document: thirdparty.employee.employeedigitaldocument.event.restrictedout.v0.table.cpd

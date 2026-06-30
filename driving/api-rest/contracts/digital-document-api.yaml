@@ -79,6 +79,33 @@ paths:
         "404":
           description: Document not found
 
+  /api/v1/documents/{documentId}/content:
+    get:
+      tags: [digital-document]
+      summary: Get a signed URL to access the stored PDF of a document
+      operationId: getDocumentContent
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: Signed URL generated — redirect the browser to contentUrl to view the PDF
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DocumentContentUrlDto' }
+        "404":
+          description: Document not found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponseDto' }
+        "422":
+          description: Document exists but PDF is not stored yet
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponseDto' }
+
   /api/v1/documents:
     get:
       tags: [digital-document]
@@ -191,6 +218,12 @@ components:
         documentId: { type: string, format: uuid }
         employeeId: { type: string }
         managedGroupId: { type: string }
+
+    DocumentContentUrlDto:
+      type: object
+      properties:
+        contentUrl: { type: string, format: uri }
+        expiresInSeconds: { type: integer, format: int64 }
 
     ErrorResponseDto:
       type: object

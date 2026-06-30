@@ -1,9 +1,11 @@
 package com.mercadona.prueba.web.digitaldocument.driving.controllers.adapters;
 
 import com.mercadona.prueba.web.digitaldocument.application.usecases.DocumentQueryUseCase;
+import com.mercadona.prueba.web.digitaldocument.application.usecases.GetDocumentContentUseCase;
 import com.mercadona.prueba.web.digitaldocument.application.usecases.RetryDocumentUseCase;
 import com.mercadona.prueba.web.digitaldocument.driving.controllers.api.DigitalDocumentApi;
 import com.mercadona.prueba.web.digitaldocument.driving.controllers.dto.DigitalDocumentResponseDto;
+import com.mercadona.prueba.web.digitaldocument.driving.controllers.dto.DocumentContentUrlDto;
 import com.mercadona.prueba.web.digitaldocument.driving.controllers.dto.DocumentPageResponseDto;
 import com.mercadona.prueba.web.digitaldocument.driving.controllers.dto.DocumentStatusResponseDto;
 import com.mercadona.prueba.web.digitaldocument.driving.controllers.mappers.DocumentDTOMapper;
@@ -28,6 +30,7 @@ public class DigitalDocumentControllerAdapter implements DigitalDocumentApi {
 
   private final DocumentQueryUseCase queryUseCase;
   private final RetryDocumentUseCase retryUseCase;
+  private final GetDocumentContentUseCase getDocumentContentUseCase;
   private final DocumentDTOMapper mapper;
 
   @Override
@@ -67,6 +70,16 @@ public class DigitalDocumentControllerAdapter implements DigitalDocumentApi {
     int pageVal = page != null ? page : 0;
     int sizeVal = size != null ? size : 20;
     return ResponseEntity.ok(mapper.toPageDto(queryUseCase.findByStatus(status, pageVal, sizeVal)));
+  }
+
+  @Override
+  @PreAuthorize("hasRole('DIGITAL_DOCUMENT_READ')")
+  public ResponseEntity<DocumentContentUrlDto> getDocumentContent(UUID documentId) {
+    var contentUrl = getDocumentContentUseCase.getContentUrl(documentId);
+    return ResponseEntity.ok(DocumentContentUrlDto.builder()
+        .contentUrl(contentUrl.signedUrl().toString())
+        .expiresInSeconds(contentUrl.expiresInSeconds())
+        .build());
   }
 
   @Override
