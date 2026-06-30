@@ -1,0 +1,149 @@
+openapi: "3.0.1"
+info:
+  title: Digital Document API
+  description: API for querying employee digital certification documents
+  version: "1.0"
+
+servers:
+  - url: /
+
+tags:
+  - name: digital-document
+    description: Employee digital document queries
+
+paths:
+
+  /api/v1/employees/{employeeId}/managed-groups/{managedGroupId}/document:
+    get:
+      tags: [digital-document]
+      summary: Get document for a specific employee
+      operationId: getDocumentByEmployee
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema: { type: string }
+        - name: managedGroupId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Document found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DigitalDocumentResponse' }
+        "404":
+          description: Document not found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+
+  /api/v1/documents/{documentId}:
+    get:
+      tags: [digital-document]
+      summary: Get document by ID
+      operationId: getDocumentById
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: Document found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DigitalDocumentResponse' }
+        "404":
+          description: Document not found
+
+  /api/v1/documents/{documentId}/status:
+    get:
+      tags: [digital-document]
+      summary: Get current document status
+      operationId: getDocumentStatus
+      parameters:
+        - name: documentId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: Status retrieved
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DocumentStatusResponse' }
+        "404":
+          description: Document not found
+
+  /api/v1/documents:
+    get:
+      tags: [digital-document]
+      summary: List documents filtered by status
+      operationId: listDocumentsByStatus
+      parameters:
+        - name: status
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [PENDING, ENRICHED, PDF_GENERATED, STORED, PUBLISHED, FAILED]
+        - name: page
+          in: query
+          schema: { type: integer, default: 0 }
+        - name: size
+          in: query
+          schema: { type: integer, default: 20 }
+      responses:
+        "200":
+          description: Documents list
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DocumentPageResponse' }
+        "400":
+          description: Invalid status parameter
+
+components:
+  schemas:
+
+    DigitalDocumentResponse:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        employeeId: { type: string }
+        managedGroupId: { type: string }
+        status: { type: string }
+        failedStep: { type: string, nullable: true }
+        storageKey: { type: string, nullable: true }
+        checksum: { type: string, nullable: true }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+        publishedAt: { type: string, format: date-time, nullable: true }
+
+    DocumentStatusResponse:
+      type: object
+      properties:
+        documentId: { type: string, format: uuid }
+        status: { type: string }
+        failedStep: { type: string, nullable: true }
+        updatedAt: { type: string, format: date-time }
+
+    DocumentPageResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items: { $ref: '#/components/schemas/DigitalDocumentResponse' }
+        totalElements: { type: integer, format: int64 }
+        page: { type: integer }
+        size: { type: integer }
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code: { type: string }
+            description: { type: string }
