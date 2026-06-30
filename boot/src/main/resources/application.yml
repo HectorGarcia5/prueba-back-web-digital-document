@@ -9,15 +9,30 @@ management:
       enabled: true
     prometheus:
       enabled: true
-  metrics:
-    export:
-      prometheus:
+  prometheus:
+    metrics:
+      export:
         enabled: true
   endpoints:
     web:
       exposure:
         include: [ info, health, metrics, prometheus ]
 
+fwkcna:
+  outbox:
+    enabled: true
+    table-name: ${TABLE_NAME:o_outbox}
+    schema-registries:
+      sr-basic:
+        url: ${SCHEMA_REGISTRY_URL}
+        authentication:
+          basic:
+            user: ${KAFKA_USER}
+            password: ${KAFKA_PASSWORD}
+  security:
+    enabled: ${SECURITY_ENABLED:true}
+    jwt:
+      issuer-uri: ${SECURITY_ISSUER_URI}
 
 outbox:
   topic:

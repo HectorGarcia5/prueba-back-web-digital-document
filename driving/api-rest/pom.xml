@@ -15,10 +15,6 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <properties>
-    <example.api.version>5.0.0</example.api.version>
-  </properties>
-
   <dependencies>
 
     <dependency>
@@ -30,30 +26,11 @@
       <groupId>com.mercadona.framework.cna</groupId>
       <artifactId>fwkcna-starter-web</artifactId>
     </dependency>
-    <dependency>
-      <groupId>com.mercadona.framework.cna</groupId>
-      <artifactId>fwkcna-starter-outbox-avro-jpa-register</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.mercadona.prueba.web-digital-document</groupId>
-      <artifactId>prueba-back-web-digital-document-postgres-repository</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.mercadona.kafka.schemas.concepto.thirdparty.employee.employeedigitaldocument</groupId>
-      <artifactId>employeedigitaldocumentv0</artifactId>
-      <version>1.1.0</version>
-    </dependency>
 
     <dependency>
       <groupId>com.mercadona.framework.cna</groupId>
       <artifactId>fwkcna-starter-security</artifactId>
     </dependency>
-
-    <dependency>
-			<groupId>com.mercadona.framework.cna.api.demotest.arq.web</groupId>
-			<artifactId>arq-web-api-server-cna-21</artifactId>
-			<version>${example.api.version}</version>
-		</dependency>
 
     <dependency>
       <groupId>org.springframework.security</groupId>
@@ -62,5 +39,39 @@
     </dependency>
 
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.openapitools</groupId>
+        <artifactId>openapi-generator-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>generate-digital-document-api</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${project.basedir}/contracts/digital-document-api.yaml</inputSpec>
+              <generatorName>spring</generatorName>
+              <apiPackage>com.mercadona.prueba.web.digitaldocument.driving.controllers.api</apiPackage>
+              <modelPackage>com.mercadona.prueba.web.digitaldocument.driving.controllers.dto</modelPackage>
+              <generateModels>false</generateModels>
+              <generateSupportingFiles>false</generateSupportingFiles>
+              <configOptions>
+                <interfaceOnly>true</interfaceOnly>
+                <useSpringBoot3>true</useSpringBoot3>
+                <useTags>true</useTags>
+                <useResponseEntity>true</useResponseEntity>
+                <dateLibrary>java8</dateLibrary>
+                <openApiNullable>false</openApiNullable>
+                <skipDefaultInterface>true</skipDefaultInterface>
+              </configOptions>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

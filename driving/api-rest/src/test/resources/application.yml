@@ -1,0 +1,4 @@
+# Test configuration: disable FWK security to allow @WithMockUser in @WebMvcTest
+fwkcna:
+  security:
+    enabled: false

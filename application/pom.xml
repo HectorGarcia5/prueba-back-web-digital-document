@@ -18,11 +18,6 @@
       <groupId>com.mercadona.framework.cna</groupId>
       <artifactId>fwkcna-commons-domain</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-context</artifactId>
-    </dependency>
-
   </dependencies>
 
 </project>

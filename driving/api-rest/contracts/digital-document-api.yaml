@@ -10,6 +10,8 @@ servers:
 tags:
   - name: digital-document
     description: Employee digital document queries
+  - name: utils
+    description: Internal utility operations
 
 paths:
 
@@ -32,12 +34,12 @@ paths:
           description: Document found
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/DigitalDocumentResponse' }
+              schema: { $ref: '#/components/schemas/DigitalDocumentResponseDto' }
         "404":
           description: Document not found
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/ErrorResponse' }
+              schema: { $ref: '#/components/schemas/ErrorResponseDto' }
 
   /api/v1/documents/{documentId}:
     get:
@@ -54,7 +56,7 @@ paths:
           description: Document found
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/DigitalDocumentResponse' }
+              schema: { $ref: '#/components/schemas/DigitalDocumentResponseDto' }
         "404":
           description: Document not found
 
@@ -73,7 +75,7 @@ paths:
           description: Status retrieved
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/DocumentStatusResponse' }
+              schema: { $ref: '#/components/schemas/DocumentStatusResponseDto' }
         "404":
           description: Document not found
 
@@ -100,14 +102,33 @@ paths:
           description: Documents list
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/DocumentPageResponse' }
+              schema: { $ref: '#/components/schemas/DocumentPageResponseDto' }
         "400":
           description: Invalid status parameter
+
+  /api/v1/utils/documents/republish:
+    post:
+      tags: [utils]
+      summary: Trigger republication of a document event to Kafka (internal BTC call)
+      operationId: republish
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RepublishRequest' }
+      responses:
+        "202":
+          description: Republication accepted
+        "400":
+          description: Invalid request body
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponseDto' }
 
 components:
   schemas:
 
-    DigitalDocumentResponse:
+    DigitalDocumentResponseDto:
       type: object
       properties:
         id: { type: string, format: uuid }
@@ -121,7 +142,7 @@ components:
         updatedAt: { type: string, format: date-time }
         publishedAt: { type: string, format: date-time, nullable: true }
 
-    DocumentStatusResponse:
+    DocumentStatusResponseDto:
       type: object
       properties:
         documentId: { type: string, format: uuid }
@@ -129,17 +150,25 @@ components:
         failedStep: { type: string, nullable: true }
         updatedAt: { type: string, format: date-time }
 
-    DocumentPageResponse:
+    DocumentPageResponseDto:
       type: object
       properties:
         content:
           type: array
-          items: { $ref: '#/components/schemas/DigitalDocumentResponse' }
+          items: { $ref: '#/components/schemas/DigitalDocumentResponseDto' }
         totalElements: { type: integer, format: int64 }
         page: { type: integer }
         size: { type: integer }
 
-    ErrorResponse:
+    RepublishRequest:
+      type: object
+      required: [documentId, employeeId, managedGroupId]
+      properties:
+        documentId: { type: string, format: uuid }
+        employeeId: { type: string }
+        managedGroupId: { type: string }
+
+    ErrorResponseDto:
       type: object
       properties:
         error:

@@ -24,8 +24,6 @@ public class DocumentQueryUseCase {
   }
 
   public DocumentPage findByStatus(String status, int page, int size) {
-    var content = repository.findByStatus(status, page, size);
-    var total   = repository.countByStatus(status);
-    return new DocumentPage(content, total, page, size);
+    return repository.findByStatus(status, page, size);
   }
 }
