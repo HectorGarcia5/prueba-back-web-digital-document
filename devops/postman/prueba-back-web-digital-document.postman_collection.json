@@ -1,0 +1,373 @@
+{
+  "info": {
+    "name": "prueba-back-web-digital-document",
+    "description": "API REST para consulta de documentos digitales de empleados.\n\nVariables de colección:\n- `baseUrl`: URL base del micro (default: http://localhost:8083)\n- `documentId`: UUID del documento\n- `employeeId`: ID del empleado\n- `managedGroupId`: ID del grupo gestionado",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8083",
+      "type": "string"
+    },
+    {
+      "key": "documentId",
+      "value": "a254788d-8a3e-446c-a4e9-dc85ede31698",
+      "type": "string"
+    },
+    {
+      "key": "employeeId",
+      "value": "3389530",
+      "type": "string"
+    },
+    {
+      "key": "managedGroupId",
+      "value": "08",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Documento por empleado",
+      "item": [
+        {
+          "name": "GET documento por empleado (200)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/employees/{{employeeId}}/managed-groups/{{managedGroupId}}/document",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "employees", "{{employeeId}}", "managed-groups", "{{managedGroupId}}", "document"]
+            },
+            "description": "Devuelve el documento digital de un empleado concreto identificado por employeeId + managedGroupId."
+          },
+          "response": [
+            {
+              "name": "200 OK - Documento encontrado",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"id\": \"a254788d-8a3e-446c-a4e9-dc85ede31698\",\n  \"employeeId\": \"3389530\",\n  \"managedGroupId\": \"08\",\n  \"status\": \"PUBLISHED\",\n  \"failedStep\": null,\n  \"storageKey\": \"employee-documents/a254788d-8a3e-446c-a4e9-dc85ede31698.pdf\",\n  \"checksum\": \"b9d572bf3e89fbc32a386c61fc9352079e92eb838cebad6ef93aa27499ac4e48\",\n  \"createdAt\": \"2026-06-30T14:42:16.970699Z\",\n  \"updatedAt\": \"2026-06-30T14:42:17.44006Z\",\n  \"publishedAt\": \"2026-06-30T14:42:17.44006Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET documento por empleado (404)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/employees/NOEXISTE/managed-groups/00/document",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "employees", "NOEXISTE", "managed-groups", "00", "document"]
+            },
+            "description": "Devuelve 404 cuando no existe documento para ese empleado."
+          },
+          "response": [
+            {
+              "name": "404 Not Found",
+              "status": "Not Found",
+              "code": 404,
+              "header": [],
+              "body": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Documento por ID",
+      "item": [
+        {
+          "name": "GET documento por ID (200)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/documents/{{documentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "documents", "{{documentId}}"]
+            },
+            "description": "Devuelve el documento completo identificado por su UUID."
+          },
+          "response": [
+            {
+              "name": "200 OK - Documento encontrado",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"id\": \"a254788d-8a3e-446c-a4e9-dc85ede31698\",\n  \"employeeId\": \"3389530\",\n  \"managedGroupId\": \"08\",\n  \"status\": \"PUBLISHED\",\n  \"failedStep\": null,\n  \"storageKey\": \"employee-documents/a254788d-8a3e-446c-a4e9-dc85ede31698.pdf\",\n  \"checksum\": \"b9d572bf3e89fbc32a386c61fc9352079e92eb838cebad6ef93aa27499ac4e48\",\n  \"createdAt\": \"2026-06-30T14:42:16.970699Z\",\n  \"updatedAt\": \"2026-06-30T14:42:17.44006Z\",\n  \"publishedAt\": \"2026-06-30T14:42:17.44006Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET documento por ID - FAILED (200)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/documents/aaaaaaaa-0000-0000-0000-000000000001",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "documents", "aaaaaaaa-0000-0000-0000-000000000001"]
+            },
+            "description": "Ejemplo de documento en estado FAILED con failedStep indicado."
+          },
+          "response": [
+            {
+              "name": "200 OK - Documento FAILED",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"id\": \"aaaaaaaa-0000-0000-0000-000000000001\",\n  \"employeeId\": \"9999999\",\n  \"managedGroupId\": \"08\",\n  \"status\": \"FAILED\",\n  \"failedStep\": \"PUBLICATION\",\n  \"storageKey\": null,\n  \"checksum\": null,\n  \"createdAt\": \"2026-06-30T15:13:12.777547Z\",\n  \"updatedAt\": \"2026-06-30T15:13:12.777547Z\",\n  \"publishedAt\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET documento por ID (404)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/documents/ffffffff-ffff-ffff-ffff-ffffffffffff",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "documents", "ffffffff-ffff-ffff-ffff-ffffffffffff"]
+            },
+            "description": "Devuelve 404 cuando el ID no existe."
+          },
+          "response": [
+            {
+              "name": "404 Not Found",
+              "status": "Not Found",
+              "code": 404,
+              "header": [],
+              "body": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Estado del documento",
+      "item": [
+        {
+          "name": "GET estado de documento (200 PUBLISHED)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/documents/{{documentId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "documents", "{{documentId}}", "status"]
+            },
+            "description": "Devuelve el estado actual del documento: status, failedStep y updatedAt."
+          },
+          "response": [
+            {
+              "name": "200 OK - Estado PUBLISHED",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"documentId\": \"a254788d-8a3e-446c-a4e9-dc85ede31698\",\n  \"status\": \"PUBLISHED\",\n  \"failedStep\": null,\n  \"updatedAt\": \"2026-06-30T14:42:17.44006Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET estado de documento (200 FAILED)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/documents/aaaaaaaa-0000-0000-0000-000000000001/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "documents", "aaaaaaaa-0000-0000-0000-000000000001", "status"]
+            },
+            "description": "Ejemplo de estado FAILED con failedStep informado."
+          },
+          "response": [
+            {
+              "name": "200 OK - Estado FAILED",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"documentId\": \"aaaaaaaa-0000-0000-0000-000000000001\",\n  \"status\": \"FAILED\",\n  \"failedStep\": \"PUBLICATION\",\n  \"updatedAt\": \"2026-06-30T15:13:12.777547Z\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Contenido PDF",
+      "item": [
+        {
+          "name": "GET contenido PDF (302 redirect)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/documents/{{documentId}}/content",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "documents", "{{documentId}}", "content"]
+            },
+            "description": "Devuelve 302 redirect a la URL firmada de MinIO. El navegador sigue el redirect y muestra el PDF directamente.\n\n⚠️ En Postman desactiva 'Follow redirects' en Settings para ver el 302 y la cabecera Location. Con redirección activada, descargará el PDF."
+          },
+          "response": [
+            {
+              "name": "302 Redirect a MinIO",
+              "status": "Found",
+              "code": 302,
+              "header": [
+                {
+                  "key": "Location",
+                  "value": "http://localhost:9000/employee-documents/employee-documents/a254788d-8a3e-446c-a4e9-dc85ede31698.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Expires=120&..."
+                }
+              ],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "GET contenido PDF (422 - sin storageKey)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/documents/aaaaaaaa-0000-0000-0000-000000000001/content",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "documents", "aaaaaaaa-0000-0000-0000-000000000001", "content"]
+            },
+            "description": "Devuelve 422 cuando el documento existe pero aún no tiene PDF almacenado (storageKey null)."
+          },
+          "response": [
+            {
+              "name": "422 Unprocessable Entity",
+              "status": "Unprocessable Entity",
+              "code": 422,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"error\": {\n    \"code\": \"DOCUMENT_NOT_STORED\",\n    \"description\": \"Document PDF is not available yet — current status: FAILED\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Listado por estado",
+      "item": [
+        {
+          "name": "GET listado status=PUBLISHED",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/documents?status=PUBLISHED&page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "documents"],
+              "query": [
+                { "key": "status", "value": "PUBLISHED" },
+                { "key": "page",   "value": "0" },
+                { "key": "size",   "value": "20" }
+              ]
+            },
+            "description": "Lista paginada de documentos filtrados por estado.\n\nEstados válidos: PENDING | ENRICHED | PDF_GENERATED | STORED | PUBLISHED | FAILED"
+          },
+          "response": [
+            {
+              "name": "200 OK - Lista PUBLISHED",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"content\": [\n    {\n      \"id\": \"a254788d-8a3e-446c-a4e9-dc85ede31698\",\n      \"employeeId\": \"3389530\",\n      \"managedGroupId\": \"08\",\n      \"status\": \"PUBLISHED\",\n      \"failedStep\": null,\n      \"storageKey\": \"employee-documents/a254788d-8a3e-446c-a4e9-dc85ede31698.pdf\",\n      \"checksum\": \"b9d572bf3e89fbc32a386c61fc9352079e92eb838cebad6ef93aa27499ac4e48\",\n      \"createdAt\": \"2026-06-30T14:42:16.970699Z\",\n      \"updatedAt\": \"2026-06-30T14:42:17.44006Z\",\n      \"publishedAt\": \"2026-06-30T14:42:17.44006Z\"\n    }\n  ],\n  \"totalElements\": 1,\n  \"page\": 0,\n  \"size\": 20\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET listado status=FAILED",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/documents?status=FAILED&page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "documents"],
+              "query": [
+                { "key": "status", "value": "FAILED" },
+                { "key": "page",   "value": "0" },
+                { "key": "size",   "value": "20" }
+              ]
+            },
+            "description": "Lista documentos en estado FAILED. Útil para monitorizar errores."
+          },
+          "response": []
+        },
+        {
+          "name": "GET listado status=PENDING",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/documents?status=PENDING",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "documents"],
+              "query": [
+                { "key": "status", "value": "PENDING" }
+              ]
+            },
+            "description": "Lista documentos recién creados pendientes de procesar."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Utilidades internas (BTC)",
+      "item": [
+        {
+          "name": "POST republish (202)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/utils/documents/republish",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "utils", "documents", "republish"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"documentId\": \"{{documentId}}\",\n  \"employeeId\": \"{{employeeId}}\",\n  \"managedGroupId\": \"{{managedGroupId}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Endpoint interno llamado por el BTC para republicar el evento Kafka de un documento ya existente.\nGuarda un evento en la tabla o_outbox — el relay del FWK lo publica a Kafka automáticamente.\n\nRespuesta 202 Accepted si se acepta correctamente."
+          },
+          "response": [
+            {
+              "name": "202 Accepted",
+              "status": "Accepted",
+              "code": 202,
+              "header": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "POST republish (400 - body inválido)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/utils/documents/republish",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "utils", "documents", "republish"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"documentId\": null,\n  \"employeeId\": \"\",\n  \"managedGroupId\": \"\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "description": "Ejemplo de body inválido — campos requeridos nulos o vacíos."
+          },
+          "response": [
+            {
+              "name": "400 Bad Request",
+              "status": "Bad Request",
+              "code": 400,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"error\": {\n    \"code\": \"VALIDATION_ERROR\",\n    \"description\": \"documentId: must not be null, employeeId: must not be blank\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
