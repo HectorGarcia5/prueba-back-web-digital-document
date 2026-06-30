@@ -24,14 +24,14 @@ spring:
 fwkcna:
   buckets:
     - id: digital-documents
-      bucket-name: digital-documents
+      bucket-name: employee-documents
       enabled: true
       url: http://localhost:9000
       signed-operation-token-expiration: 120
       provider: minio
       credentials:
-        access-key: minioadmin
-        secret-key: minioadmin
+        access-key: minio
+        secret-key: minio123
   outbox:
     enabled: true
     table-name: o_outbox

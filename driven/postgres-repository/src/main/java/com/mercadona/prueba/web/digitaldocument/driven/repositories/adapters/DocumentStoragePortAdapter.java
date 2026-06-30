@@ -15,25 +15,25 @@ public class DocumentStoragePortAdapter implements DocumentStoragePort {
   private static final long SIGNED_URL_EXPIRATION_SECONDS = 120L;
 
   private final BucketService bucketService;
-  private final String bucketName;
+  private final String bucketId;
 
   /**
    * Creates the adapter.
    *
    * @param bucketService the FWK bucket service
-   * @param bucketName    the configured bucket name read from fwkcna.buckets[0].bucket-name
+   * @param bucketId      the logical bucket id from fwkcna.buckets[0].id — used to look up the client config
    */
   public DocumentStoragePortAdapter(
       BucketService bucketService,
-      @Value("${fwkcna.buckets[0].bucket-name}") String bucketName) {
+      @Value("${fwkcna.buckets[0].id}") String bucketId) {
     this.bucketService = bucketService;
-    this.bucketName = bucketName;
+    this.bucketId = bucketId;
   }
 
   @Override
   public DocumentContentUrl getSignedUrl(String storageKey) {
     try {
-      var uri = bucketService.getSignedUrl(bucketName, storageKey, SIGNED_URL_EXPIRATION_SECONDS);
+      var uri = bucketService.getSignedUrl(bucketId, storageKey, SIGNED_URL_EXPIRATION_SECONDS);
       return new DocumentContentUrl(uri, SIGNED_URL_EXPIRATION_SECONDS);
     } catch (Exception e) {
       throw new RuntimeException(e); // TODO: Replace with corresponding business exception
