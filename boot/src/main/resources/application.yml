@@ -19,5 +19,9 @@ management:
         include: [ info, health, metrics, prometheus ]
 
 
+outbox:
+  topic:
+    employee-digital-document: ${KAFKA_TOPIC_OUTPUT:thirdparty.employee.employeedigitaldocument.event.restrictedout.v0.table.cpd}
+
 server:
   port: 8080

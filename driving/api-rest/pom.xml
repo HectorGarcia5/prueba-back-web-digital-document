@@ -31,12 +31,13 @@
       <artifactId>fwkcna-starter-web</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-jdbc</artifactId>
+      <groupId>com.mercadona.framework.cna</groupId>
+      <artifactId>fwkcna-starter-outbox-avro-jpa-register</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
+      <groupId>com.mercadona.kafka.schemas.concepto.thirdparty.employee.employeedigitaldocument</groupId>
+      <artifactId>employeedigitaldocumentv0</artifactId>
+      <version>1.1.0</version>
     </dependency>
 
     <dependency>

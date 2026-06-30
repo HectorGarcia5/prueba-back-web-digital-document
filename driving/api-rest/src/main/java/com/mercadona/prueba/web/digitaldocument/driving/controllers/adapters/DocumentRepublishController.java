@@ -1,23 +1,23 @@
 package com.mercadona.prueba.web.digitaldocument.driving.controllers.adapters;
 
+import com.mercadona.framework.cna.lib.outbox.avro.jpa.register.service.OutBoxAvroJPAService;
 import com.mercadona.prueba.web.digitaldocument.driving.controllers.dto.RepublishRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.time.OffsetDateTime;
-import java.util.UUID;
+import thirdparty.employee.employeedigitaldocument.v0.EmployeeDigitalDocumentEventRestrictedOutKey;
+import thirdparty.employee.employeedigitaldocument.v0.EmployeeDigitalDocumentEventRestrictedOutValue;
 
 /**
- * Internal endpoint called by the BTC micro to schedule republication of a document.
- * Inserts a MANUAL_RETRY Outbox event — the SNK OutboxPublisher delivers it to Kafka.
+ * Internal endpoint called by the BTC micro to schedule republication.
+ * Saves an Outbox event via OutBoxAvroJPAService — the framework auto-publishes to Kafka.
  */
 @Slf4j
 @RestController
@@ -25,36 +25,28 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class DocumentRepublishController {
 
-  private static final String TOPIC =
-      "thirdparty.employee.employeedigitaldocument.event.restrictedout.v0.table.cpd";
-  private static final String EVENT_TYPE = "EmployeeDigitalDocumentCreated";
+  private final OutBoxAvroJPAService outBoxAvroJPAService;
 
-  private final JdbcTemplate jdbcTemplate;
+  @Value("${outbox.topic.employee-digital-document}")
+  private String outputTopic;
 
   @PostMapping("/republish")
   @ResponseStatus(HttpStatus.ACCEPTED)
   public void republish(@Valid @RequestBody RepublishRequest request) {
     log.info("event=REPUBLISH_REQUEST documentId={}", request.getDocumentId());
 
-    String payload = "{\"digitalDocumentId\":\"" + request.getDocumentId()
-        + "\",\"employeeId\":\"" + request.getEmployeeId()
-        + "\",\"managedGroupId\":\"" + request.getManagedGroupId() + "\"}";
+    var key = EmployeeDigitalDocumentEventRestrictedOutKey.newBuilder()
+        .setEmployeeId(request.getEmployeeId())
+        .setManagedGroupId(request.getManagedGroupId())
+        .build();
 
-    jdbcTemplate.update("""
-        INSERT INTO outbox_event
-          (id, aggregate_id, event_type, topic, event_key, payload,
-           status, publication_reason, attempts, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, 'PENDING', 'MANUAL_RETRY', 0, ?)
-        """,
-        UUID.randomUUID(),
-        request.getDocumentId(),
-        EVENT_TYPE,
-        TOPIC,
-        request.getDocumentId().toString(),
-        payload,
-        OffsetDateTime.now()
-    );
+    var value = EmployeeDigitalDocumentEventRestrictedOutValue.newBuilder()
+        .setDigitalDocumentId(request.getDocumentId().toString())
+        .setEmployeeId(request.getEmployeeId())
+        .setManagedGroupId(request.getManagedGroupId())
+        .build();
 
-    log.info("event=REPUBLISH_OUTBOX_CREATED documentId={}", request.getDocumentId());
+    outBoxAvroJPAService.save(key, value, outputTopic);
+    log.info("event=REPUBLISH_OUTBOX_SAVED documentId={}", request.getDocumentId());
   }
 }
