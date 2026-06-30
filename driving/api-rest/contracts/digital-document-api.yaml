@@ -82,7 +82,7 @@ paths:
   /api/v1/documents/{documentId}/content:
     get:
       tags: [digital-document]
-      summary: Get a signed URL to access the stored PDF of a document
+      summary: Redirect to the stored PDF — browser opens the document directly
       operationId: getDocumentContent
       parameters:
         - name: documentId
@@ -90,11 +90,11 @@ paths:
           required: true
           schema: { type: string, format: uuid }
       responses:
-        "200":
-          description: Signed URL generated — redirect the browser to contentUrl to view the PDF
-          content:
-            application/json:
-              schema: { $ref: '#/components/schemas/DocumentContentUrlDto' }
+        "302":
+          description: Redirect to the MinIO signed URL — browser displays the PDF directly
+          headers:
+            Location:
+              schema: { type: string, format: uri }
         "404":
           description: Document not found
           content:

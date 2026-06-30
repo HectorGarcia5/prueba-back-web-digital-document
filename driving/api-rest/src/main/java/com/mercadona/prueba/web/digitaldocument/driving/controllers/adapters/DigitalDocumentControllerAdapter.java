@@ -4,7 +4,6 @@ import com.mercadona.prueba.web.digitaldocument.application.usecases.DocumentQue
 import com.mercadona.prueba.web.digitaldocument.application.usecases.GetDocumentContentUseCase;
 import com.mercadona.prueba.web.digitaldocument.driving.controllers.api.DigitalDocumentApi;
 import com.mercadona.prueba.web.digitaldocument.driving.controllers.dto.DigitalDocumentResponseDto;
-import com.mercadona.prueba.web.digitaldocument.driving.controllers.dto.DocumentContentUrlDto;
 import com.mercadona.prueba.web.digitaldocument.driving.controllers.dto.DocumentPageResponseDto;
 import com.mercadona.prueba.web.digitaldocument.driving.controllers.dto.DocumentStatusResponseDto;
 import com.mercadona.prueba.web.digitaldocument.driving.controllers.mappers.DocumentDTOMapper;
@@ -72,12 +71,9 @@ public class DigitalDocumentControllerAdapter implements DigitalDocumentApi {
 
   @Override
   @PreAuthorize("hasRole('DIGITAL_DOCUMENT_READ')")
-  public ResponseEntity<DocumentContentUrlDto> getDocumentContent(UUID documentId) {
+  public ResponseEntity<Void> getDocumentContent(UUID documentId) {
     var contentUrl = getDocumentContentUseCase.getContentUrl(documentId);
-    return ResponseEntity.ok(DocumentContentUrlDto.builder()
-        .contentUrl(contentUrl.signedUrl().toString())
-        .expiresInSeconds(contentUrl.expiresInSeconds())
-        .build());
+    return ResponseEntity.status(302).location(contentUrl.signedUrl()).build();
   }
 
 }
