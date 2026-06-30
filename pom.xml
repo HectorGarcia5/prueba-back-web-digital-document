@@ -3,11 +3,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.mercadona.prueba.masterdata</groupId>
-  <artifactId>prueba-back-web-master-data</artifactId>
+  <groupId>com.mercadona.prueba.web-digital-document</groupId>
+  <artifactId>prueba-back-web-digital-document</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>prueba-back-web-master-data</name>
+  <name>prueba-back-web-digital-document</name>
 
   <!-- Provides dependency and plugin management for the given Spring Boot version -->
   <parent>
@@ -19,18 +19,18 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>com.mercadona.prueba.masterdata</groupId>
-        <artifactId>prueba-back-web-master-data-api-rest</artifactId>
+        <groupId>com.mercadona.prueba.web-digital-document</groupId>
+        <artifactId>prueba-back-web-digital-document-api-rest</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.mercadona.prueba.masterdata</groupId>
-        <artifactId>prueba-back-web-master-data-application</artifactId>
+        <groupId>com.mercadona.prueba.web-digital-document</groupId>
+        <artifactId>prueba-back-web-digital-document-application</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.mercadona.prueba.masterdata</groupId>
-        <artifactId>prueba-back-web-master-data-postgres-repository</artifactId>
+        <groupId>com.mercadona.prueba.web-digital-document</groupId>
+        <artifactId>prueba-back-web-digital-document-postgres-repository</artifactId>
         <version>${project.version}</version>
       </dependency>
     </dependencies>

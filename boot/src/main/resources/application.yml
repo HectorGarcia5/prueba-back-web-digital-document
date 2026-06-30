@@ -1,6 +1,6 @@
 spring:
   application:
-    name: prueba-back-web-master-data
+    name: prueba-back-web-digital-document
 
 # Actuator endpoints configuration
 management:

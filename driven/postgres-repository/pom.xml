@@ -4,13 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>prueba-back-web-master-data-postgres-repository</artifactId>
+  <artifactId>prueba-back-web-digital-document-postgres-repository</artifactId>
   <packaging>jar</packaging>
-  <name>prueba-back-web-master-data-postgres-repository</name>
+  <name>prueba-back-web-digital-document-postgres-repository</name>
 
   <parent>
-    <groupId>com.mercadona.prueba.masterdata</groupId>
-    <artifactId>prueba-back-web-master-data</artifactId>
+    <groupId>com.mercadona.prueba.web-digital-document</groupId>
+    <artifactId>prueba-back-web-digital-document</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
@@ -18,8 +18,8 @@
   <dependencies>
 
     <dependency>
-      <groupId>com.mercadona.prueba.masterdata</groupId>
-      <artifactId>prueba-back-web-master-data-application</artifactId>
+      <groupId>com.mercadona.prueba.web-digital-document</groupId>
+      <artifactId>prueba-back-web-digital-document-application</artifactId>
     </dependency>
 
     <dependency>
