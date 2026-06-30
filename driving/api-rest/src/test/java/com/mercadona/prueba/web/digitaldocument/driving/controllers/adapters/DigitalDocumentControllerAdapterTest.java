@@ -1,8 +1,11 @@
 package com.mercadona.prueba.web.digitaldocument.driving.controllers.adapters;
 
+import com.mercadona.prueba.web.digitaldocument.application.exception.DocumentNotFoundException;
 import com.mercadona.prueba.web.digitaldocument.application.model.DigitalDocumentView;
+import com.mercadona.prueba.web.digitaldocument.application.model.DocumentContentUrl;
 import com.mercadona.prueba.web.digitaldocument.application.model.DocumentPage;
 import com.mercadona.prueba.web.digitaldocument.application.usecases.DocumentQueryUseCase;
+import com.mercadona.prueba.web.digitaldocument.application.usecases.GetDocumentContentUseCase;
 import com.mercadona.prueba.web.digitaldocument.driving.controllers.error.DigitalDocumentControllerAdvice;
 import com.mercadona.prueba.web.digitaldocument.driving.controllers.mappers.DocumentDTOMapperImpl;
 import org.junit.jupiter.api.Test;
@@ -13,6 +16,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +24,7 @@ import java.util.UUID;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -32,6 +37,9 @@ class DigitalDocumentControllerAdapterTest {
 
     @MockBean
     private DocumentQueryUseCase queryUseCase;
+
+    @MockBean
+    private GetDocumentContentUseCase getDocumentContentUseCase;
 
     @Test
     @WithMockUser(roles = "DIGITAL_DOCUMENT_READ")
@@ -145,9 +153,36 @@ class DigitalDocumentControllerAdapterTest {
                 .andExpect(jsonPath("$.totalElements").value(0));
     }
 
+
+    @Test
+    @WithMockUser(roles = "DIGITAL_DOCUMENT_READ")
+    void getDocumentContent_whenStoredDocument_returns302WithLocation() throws Exception {
+        var id = UUID.randomUUID();
+        var signedUri = URI.create("http://minio/employee-documents/" + id + ".pdf?sig=abc");
+        when(getDocumentContentUseCase.getContentUrl(id))
+                .thenReturn(new DocumentContentUrl(signedUri, 120L));
+
+        mockMvc.perform(get("/api/v1/documents/{id}/content", id))
+                .andExpect(status().isFound())
+                .andExpect(header().string("Location", signedUri.toString()));
+    }
+
+    @Test
+    @WithMockUser(roles = "DIGITAL_DOCUMENT_READ")
+    void getDocumentContent_whenDocumentNotFound_returns404() throws Exception {
+        var id = UUID.randomUUID();
+        when(getDocumentContentUseCase.getContentUrl(id))
+                .thenThrow(new DocumentNotFoundException(id));
+
+        mockMvc.perform(get("/api/v1/documents/{id}/content", id))
+                .andExpect(status().isNotFound());
+    }
+
     private static DigitalDocumentView aView(UUID id) {
         return new DigitalDocumentView(
                 id, "EMP1", "MG1", "PUBLISHED", null, "key/doc.pdf", "chk123",
                 OffsetDateTime.now(), OffsetDateTime.now(), OffsetDateTime.now());
     }
 }
+
+// NOTE: appended after original file — tests for getDocumentContent (302 redirect)

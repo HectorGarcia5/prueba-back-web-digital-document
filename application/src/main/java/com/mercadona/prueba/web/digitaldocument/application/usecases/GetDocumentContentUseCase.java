@@ -34,8 +34,8 @@ public class GetDocumentContentUseCase {
 
     if (document.storageKey() == null) {
       throw new MercadonaBusinessException(
-          "DOCUMENT_NOT_STORED",
-          "Document PDF is not available yet — current status: " + document.status());
+          "Document PDF is not available yet — current status: " + document.status(),
+          "DOCUMENT_NOT_STORED");
     }
 
     return storagePort.getSignedUrl(document.storageKey());
