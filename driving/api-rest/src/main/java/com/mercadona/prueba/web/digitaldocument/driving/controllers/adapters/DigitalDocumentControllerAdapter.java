@@ -2,7 +2,6 @@ package com.mercadona.prueba.web.digitaldocument.driving.controllers.adapters;
 
 import com.mercadona.prueba.web.digitaldocument.application.usecases.DocumentQueryUseCase;
 import com.mercadona.prueba.web.digitaldocument.application.usecases.GetDocumentContentUseCase;
-import com.mercadona.prueba.web.digitaldocument.application.usecases.RetryDocumentUseCase;
 import com.mercadona.prueba.web.digitaldocument.driving.controllers.api.DigitalDocumentApi;
 import com.mercadona.prueba.web.digitaldocument.driving.controllers.dto.DigitalDocumentResponseDto;
 import com.mercadona.prueba.web.digitaldocument.driving.controllers.dto.DocumentContentUrlDto;
@@ -29,7 +28,6 @@ import java.util.UUID;
 public class DigitalDocumentControllerAdapter implements DigitalDocumentApi {
 
   private final DocumentQueryUseCase queryUseCase;
-  private final RetryDocumentUseCase retryUseCase;
   private final GetDocumentContentUseCase getDocumentContentUseCase;
   private final DocumentDTOMapper mapper;
 
@@ -82,10 +80,4 @@ public class DigitalDocumentControllerAdapter implements DigitalDocumentApi {
         .build());
   }
 
-  @Override
-  @PreAuthorize("hasRole('DIGITAL_DOCUMENT_RETRY')")
-  public ResponseEntity<Void> retryDocument(UUID documentId) {
-    retryUseCase.retry(documentId);
-    return ResponseEntity.accepted().build();
-  }
 }
