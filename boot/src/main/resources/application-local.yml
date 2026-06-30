@@ -1,9 +1,11 @@
 spring:
   flyway:
-    locations: classpath:migration/versions
+    enabled: false
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/examples
+    url: jdbc:postgresql://localhost:5432/digital_document
     username: sa
     password: root
     driver-class-name: org.postgresql.Driver
+    hikari:
+      schema: digital_document
