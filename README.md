@@ -1,52 +1,48 @@
-Framework Backend Arquetipo Web
-===================================
+# prueba-back-web-digital-document
 
+Microservicio WEB — API REST de consulta y republicación de documentos digitales de empleados.
+
+> La arquitectura completa del sistema se documenta en el micro principal:
+> **[prueba-back-snk-digital-document](../prueba-back-snk-digital-document/README.md)**
+
+---
+
+## Responsabilidad
+
+Este micro expone la capa de consulta HTTP del sistema y el endpoint de republicación para el batch BTC.
+No procesa eventos Kafka ni genera PDFs — solo lee de la base de datos compartida y escribe en el Outbox.
+
+---
+
+## Endpoints
+
+| Método | Ruta                                                              | Descripción                               | Código   |
+|--------|-------------------------------------------------------------------|-------------------------------------------|----------|
+| GET    | `/api/v1/employees/{employeeId}/managed-groups/{mg}/document`    | Documento de un empleado concreto          | 200/404  |
+| GET    | `/api/v1/documents/{documentId}`                                  | Documento por ID                           | 200/404  |
+| GET    | `/api/v1/documents/{documentId}/status`                           | Estado actual del documento                | 200/404  |
+| GET    | `/api/v1/documents?status={status}&page={p}&size={s}`             | Listado filtrado por estado                | 200/400  |
+| POST   | `/api/v1/documents/{documentId}/retry`                            | Reinicio manual de backoff (FAILED→batch)  | 202/404/409 |
+| POST   | `/api/v1/utils/documents/republish`                               | Republicación (llamado por BTC)            | 202      |
+
+---
+
+## Stack técnico
+
+- Java 21, Spring Boot 3.3.x, fwkcna-parent 5.2.1
+- PostgreSQL (solo lectura de `digital_document` + escritura en `o_outbox`)
+- Transactional Outbox (fwkcna-starter-outbox-avro-jpa-register) para republicación
+- MapStruct, OpenAPI (contratos en `driving/api-rest/contracts/`)
+- Flyway **deshabilitado** (el esquema lo gestiona el SNK)
+
+---
+
+## Arranque local
 
 ```bash
-mvn archetype:generate -DarchetypeGroupId=com.mercadona.framework.cna.archetype -DarchetypeArtifactId=fwkcna-archetype-web -DarchetypeVersion=5.0.0
+# Puerto: 8083
+mvn -f /ruta/prueba-back-web-digital-document/pom.xml --projects boot \
+  spring-boot:run -Dspring-boot.run.profiles=local
 ```
 
-
-
-Podemos ejecutar y ver en funcionamiento el ejemplo incorporado en la generación del proyecto.
-Prerequsitos:
-
-- Docker
-- Postman
-- Cliente de postgres (para poder ejecutar SQLs de creación de tablas)
-  Nos posicionamos en el directorio `raiz` del proyecto generado, y realizamos los siguientes pasos:
-
-1. Levantamos una bbdd en local utilizando `docker`, en la carpeta `docker`
-
-   ```bash
-    docker-compose up
-    ```
-2. Creamos las tablas de base de datos del ejemplo utilizando el script situado en la carpeta
-   `driven/repository-jpa/sql/migration/versions.1.0.0-create-schema-examples/V1.0.0__create-schema-examples.sql`
-
-3. Hacemos la instalación en local del proyecto
-
-   ```bash
-    mvn clean install
-    ```
-
-4. Ejecutamos la aplicación desde la raíz del proyecto con:
-
-   ```bash
-    mvn clean spring-boot:run -pl boot -Dspring-boot.run.profiles=local
-    ```
-
-   o navegando a la carpeta `boot` del proyecto:
-
-    ```bash
-    mvn clean spring-boot:run -Dspring-boot.run.profiles=local
-    ```
-
-6. Probamos la aplicación desde `postman`, importamos las collections de la carpeta `driving/api-rest/postman`
-   
-# Microservicio generado a partir de arquetipo
-
-Toda la documentación relevante al desarrollo de este tipo de proyectos se encuentra en la guía del
-desarrollador: [Guía del desarrollador](https://fwk.srv.mercadona.com/framework/spring-boot?pathname=/latest/getting-started/first-api-rest/)
-
-Versión del arquetipo: `5.1.0`
+Requiere que el SNK haya ejecutado las migraciones Flyway y que PostgreSQL esté levantado.

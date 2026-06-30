@@ -179,3 +179,4 @@ pom.xml.versionsBackup
 .claude/skills/atenea-*
 .claude/skills/commons-*
 .claude/skills/fwk-*
+driving/api-rest/logs/
